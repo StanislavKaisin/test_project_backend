@@ -1,15 +1,32 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  InternalServerErrorException,
+  UsePipes,
+} from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { JoiValidationPipe } from 'src/middleware/joi-validation.middleware';
+import { createUserSchema } from 'src/middleware/createUserSchema';
 
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.create(createUserDto);
+  @UsePipes(new JoiValidationPipe(createUserSchema))
+  async create(@Body() createUserDto: CreateUserDto) {
+    try {
+      return this.usersService.create(createUserDto);
+    } catch (error) {
+      throw new InternalServerErrorException(error);
+    }
   }
 
   @Get()
