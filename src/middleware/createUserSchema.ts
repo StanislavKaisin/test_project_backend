@@ -13,6 +13,7 @@ export const createUserSchema = joi.object({
   viber: phoneNumberJoi
     .string()
     .phoneNumber({ defaultCountry: 'UA', format: 'international' })
+    //'+32 494 32 24 56'
     .required(),
-  address: joi.string().alphanum().min(10).max(100).required(),
+  address: joi.string().allow(null, '').alphanum().min(10).max(100),
 });
