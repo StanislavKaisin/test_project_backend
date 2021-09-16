@@ -12,24 +12,7 @@ export class UsersService {
     @InjectModel(User.name) private usersModel: Model<UserDocument>,
   ) {}
   async create(createUserDto: CreateUserDto) {
-    // console.log(`createUserDto`, createUserDto);
-    this.usersModel.create(createUserDto);
-    // try {
-    //   return await this.usersModel.create(createUserDto);
-    // } catch (error) {
-    //   // return error.message;
-    //   // console.log(
-    //   //   `error`,
-    //   //   /^E11000 duplicate key error collection/.test(error.message),
-    //   // );
-    //   // return new BadRequestException(error);
-    //   // console.log(`error`, error);
-    //   if (/^E11000 duplicate key error collection/.test(error.message)) {
-    //     return new Error('User with this email is already registered.');
-    //   }
-    //   // return new Error('User with this email is already registered.');
-    //   // throw new BadRequestException();
-    // }
+    return this.usersModel.create(createUserDto);
   }
 
   findAll() {
