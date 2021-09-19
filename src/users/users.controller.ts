@@ -14,7 +14,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { JoiValidationPipe } from 'src/middleware/joi-validation.middleware';
 import { createUserSchema } from 'src/middleware/createUserSchema';
-import { hash } from 'src/utils/encryption';
+import { hashPassword } from 'src/utils/encryption';
 
 @Controller('users')
 export class UsersController {
@@ -23,7 +23,7 @@ export class UsersController {
   @Post()
   @UsePipes(new JoiValidationPipe(createUserSchema))
   async create(@Body() createUserDto: CreateUserDto) {
-    const hashedPassword = await hash(createUserDto.password);
+    const hashedPassword = await hashPassword(createUserDto.password);
 
     const userToDb: CreateUserDto = {
       ...createUserDto,
@@ -50,7 +50,7 @@ export class UsersController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+    return this.usersService.findOne(id);
   }
 
   @Patch(':id')

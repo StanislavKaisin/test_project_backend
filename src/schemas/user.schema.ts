@@ -29,6 +29,7 @@ export class User {
   alerts: [
     { body: 'string'; by: mongoose.Schema.Types.ObjectId; ref: 'Alert' },
   ];
+  @Prop()
   comments: [
     {
       body: 'string';
