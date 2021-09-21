@@ -26,28 +26,7 @@ export class AuthService {
   }
 
   async login(email: string) {
-    // const payload = { email: user.email, password: user.password };
-    // console.log(`user`, user);
-    // try {
     const userFromDb = await this.usersService.findOne(email);
     return userFromDb;
-    // if (!userFromDb) {
-    //   return new Error(`User with email ${user.email} not found`);
-    // }
-    // const comparePasswords = await isMatch(user.password, userFromDb.password);
-    // console.log(`userFromDb`, userFromDb);
-    // if (userFromDb && comparePasswords) {
-    //   const { password, ...result } = JSON.parse(JSON.stringify(userFromDb));
-    //   return {
-    //     access_token: this.jwtService.sign(payload),
-    //     userData: result,
-    //   };
-    // } else {
-    //   // throw
-    // }
-    // return new UnauthorizedException();
-    // } catch (error) {
-    //   throw new UnauthorizedException(error);
-    // }
   }
 }

@@ -16,6 +16,8 @@ import { JoiValidationPipe } from 'src/middleware/joi-validation.middleware';
 import { createUserSchema } from 'src/middleware/createUserSchema';
 import { hashPassword } from 'src/utils/encryption';
 
+const MongoErrorDuplicateKeyErrorCode = 11000;
+
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -34,12 +36,13 @@ export class UsersController {
       return result;
     } catch (error) {
       let errorMessage;
-      if (error?.name === 'MongoError' && error?.code == 11000) {
+      if (
+        error?.name === 'MongoError' &&
+        error?.code == MongoErrorDuplicateKeyErrorCode
+      ) {
         errorMessage = 'User with this email is already registered.';
       }
-      throw new BadRequestException(
-        errorMessage ? errorMessage : error.message,
-      );
+      throw new BadRequestException(errorMessage || error.message);
     }
   }
 

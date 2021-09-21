@@ -5,5 +5,5 @@ export const addAlertSchema = joi.object({
   description: joi.string().alphanum().min(3).max(600).required(),
   // required for backend validation
   userId: joi.string().alphanum().required(),
-  alertd: joi.string().alphanum().required(),
+  alertId: joi.string().alphanum().required(),
 });

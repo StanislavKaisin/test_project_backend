@@ -24,6 +24,4 @@ const secretKey = config.SECRET;
   providers: [AuthService, LocalStrategy, JwtStrategy],
   controllers: [AuthController],
 })
-export class AuthModule implements NestModule {
-  configure() {}
-}
+export class AuthModule {}
