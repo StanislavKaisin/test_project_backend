@@ -25,9 +25,14 @@ export class User {
   address: string;
   @Prop()
   password: string;
+
   @Prop()
   alerts: [
-    { body: 'string'; by: mongoose.Schema.Types.ObjectId; ref: 'Alert' },
+    {
+      body: 'string';
+      by: mongoose.Schema.Types.ObjectId;
+      ref: 'Alert';
+    },
   ];
   @Prop()
   comments: [
