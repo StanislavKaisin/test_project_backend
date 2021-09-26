@@ -5,4 +5,5 @@ export class CreateAlertDto {
   readonly viber: string;
   readonly address: string;
   readonly owner: string;
+  readonly file?: any;
 }

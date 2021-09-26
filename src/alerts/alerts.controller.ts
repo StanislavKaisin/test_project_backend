@@ -11,6 +11,7 @@ import {
   UploadedFile,
   BadRequestException,
   Res,
+  HttpStatus,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import express, { Request, Response } from 'express';
@@ -45,30 +46,41 @@ export class AlertsController {
     if (error) {
       throw new BadRequestException(error.message);
     }
+    delete createAlertDto[file];
     const newAlert = await this.alertsService.create(createAlertDto);
-    const fileName = newAlert._id;
-    const fileExtension = file.mimetype.split('/')[1];
-    const filePath = join(
-      __dirname,
-      '..',
-      '..',
-      `uploads/${fileName}.${fileExtension}`,
-    );
-    try {
-      fs.writeFile(filePath, file.buffer, async () => {
-        await this.alertsService
-          .update(newAlert._id, {
-            img: `${fileName}.${fileExtension}`,
-          })
-          .then((updatedAlert) => {
-            res.status(201);
-            res.send(updatedAlert);
-          });
-      });
-    } catch (error) {
-      throw new Error(error.message);
+    if (file === undefined) {
+      await this.alertsService
+        .update(newAlert._id, {
+          img: ``,
+        })
+        .then((updatedAlert) => {
+          res.status(201);
+          res.send(updatedAlert);
+        });
+    } else {
+      const fileName = newAlert._id;
+      const fileExtension = file.mimetype.split('/')[1];
+      const filePath = join(
+        __dirname,
+        '..',
+        '..',
+        `uploads/${fileName}.${fileExtension}`,
+      );
+      try {
+        fs.writeFile(filePath, file.buffer, async () => {
+          await this.alertsService
+            .update(newAlert._id, {
+              img: `${fileName}.${fileExtension}`,
+            })
+            .then((updatedAlert) => {
+              res.status(201);
+              res.send(updatedAlert);
+            });
+        });
+      } catch (error) {
+        throw new Error(error.message);
+      }
     }
-    return;
   }
 
   @Get()
@@ -77,8 +89,24 @@ export class AlertsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.alertsService.findOne(id);
+  async findOne(@Param('id') id: string, @Res() res: Response) {
+    const ObjectID = require('mongodb').ObjectID;
+    if (ObjectID.isValid(id)) {
+      try {
+        const result = await this.alertsService.findOne(id);
+
+        if (!result) {
+          return res.status(HttpStatus.NOT_FOUND).send();
+        } else {
+          return res.status(200).send(result);
+        }
+      } catch (error) {
+        const errorMessage = error?.reason || error.message;
+        return new BadRequestException(errorMessage);
+      }
+    } else {
+      return res.status(HttpStatus.NOT_FOUND).send();
+    }
   }
 
   @Patch(':id')
