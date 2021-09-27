@@ -29,6 +29,14 @@ export class User {
   alerts: [
     { body: 'string'; by: mongoose.Schema.Types.ObjectId; ref: 'Alert' },
   ];
+  @Prop()
+  comments: [
+    {
+      body: 'string';
+      by: mongoose.Schema.Types.ObjectId;
+      ref: 'Comment';
+    },
+  ];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
