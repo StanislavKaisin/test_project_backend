@@ -12,13 +12,12 @@ import {
   BadRequestException,
   Res,
   HttpStatus,
+  Query,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import express, { Request, Response } from 'express';
-import { Express } from 'express';
+import { Request, Response } from 'express';
 import { Multer } from 'multer';
 import { addAlertSchema } from 'src/middleware/addAlertSchema';
-import { JoiValidationPipe } from 'src/middleware/joi-validation.middleware';
 import { join } from 'path';
 import * as fs from 'fs';
 import { AlertsService } from './alerts.service';
@@ -81,6 +80,19 @@ export class AlertsController {
         throw new Error(error.message);
       }
     }
+  }
+
+  @Get('search')
+  async findAlertsWithPagination(
+    @Query('query') query: string,
+    @Query('page') page: number,
+  ) {
+    // console.log(`query=`, query);
+    // @ts-ignore error TS2367
+    if (page === 'undefined') {
+      page = 1;
+    }
+    return this.alertsService.findAlertsPagination(query, page);
   }
 
   @Get()

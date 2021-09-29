@@ -3,19 +3,33 @@ import * as mongoose from 'mongoose';
 import { Document } from 'mongoose';
 import { User } from './user.schema';
 import { Transform, Type } from 'class-transformer';
+import * as mongoosePaginate from 'mongoose-paginate-v2';
 
 export type AlertDocument = Alert & Document;
+export interface IAlertDocument extends Document {
+  title: string;
+  description: string;
+  phone: string;
+  viber: string;
+  address: string;
+  numberOfViews: number;
+  img: string;
+  owner: User;
+  comments: [comment: Comment];
+}
 
 @Schema({ timestamps: true })
 export class Alert {
   @Transform(({ value }) => value.toString())
   @Prop({
     required: true,
+    index: true,
   })
   title: string;
 
   @Prop({
     required: true,
+    index: true,
   })
   description: string;
 
@@ -45,3 +59,8 @@ export class Alert {
 }
 
 export const AlertSchema = SchemaFactory.createForClass(Alert);
+AlertSchema.index({
+  title: 'text',
+  description: 'text',
+});
+AlertSchema.plugin(mongoosePaginate);

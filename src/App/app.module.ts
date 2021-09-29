@@ -11,7 +11,7 @@ import { AlertsModule } from 'src/alerts/alerts.module';
 
 @Module({
   imports: [
-    MongooseModule.forRoot(config.DB_URI),
+    MongooseModule.forRoot(config.DB_URI, { useCreateIndex: true }),
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', '..', 'uploads'),
     }),
