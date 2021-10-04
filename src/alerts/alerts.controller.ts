@@ -13,6 +13,7 @@ import {
   Res,
   HttpStatus,
   Query,
+  Req,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Request, Response } from 'express';
@@ -23,6 +24,7 @@ import * as fs from 'fs';
 import { AlertsService } from './alerts.service';
 import { CreateAlertDto } from './dto/create-alert.dto';
 import { UpdateAlertDto } from './dto/update-alert.dto';
+import { UserAlertsDto } from './dto/user-alerts.dto';
 
 @Controller('alerts')
 export class AlertsController {
@@ -87,7 +89,6 @@ export class AlertsController {
     @Query('query') query: string,
     @Query('page') page: number,
   ) {
-    // console.log(`query=`, query);
     // @ts-ignore error TS2367
     if (page === 'undefined') {
       page = 1;
@@ -129,5 +130,15 @@ export class AlertsController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.alertsService.remove(+id);
+  }
+
+  @Post('user')
+  findUserAlerts(@Req() req, @Body() userAlertsDto: UserAlertsDto) {
+    const { owner } = userAlertsDto;
+    try {
+      return this.alertsService.findUserAlerts(owner);
+    } catch (error) {
+      return new BadRequestException(error);
+    }
   }
 }

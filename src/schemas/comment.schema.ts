@@ -11,11 +11,11 @@ export class Comment {
   })
   description: string;
 
-  @Prop()
-  owner: { body: 'string'; by: mongoose.Schema.Types.ObjectId; ref: 'User' };
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
+  owner: string;
 
-  @Prop()
-  alert: { body: 'string'; by: mongoose.Schema.Types.ObjectId; ref: 'Alert' };
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Alert' })
+  alert: string;
 }
 
 export const CommentSchema = SchemaFactory.createForClass(Comment);
