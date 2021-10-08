@@ -6,7 +6,6 @@ import * as mongoose from 'mongoose';
 import { Comment, CommentDocument } from 'src/schemas/comment.schema';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
-import { title } from 'process';
 
 @Injectable()
 export class CommentsService {

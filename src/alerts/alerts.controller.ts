@@ -25,6 +25,7 @@ import { AlertsService } from './alerts.service';
 import { CreateAlertDto } from './dto/create-alert.dto';
 import { UpdateAlertDto } from './dto/update-alert.dto';
 import { UserAlertsDto } from './dto/user-alerts.dto';
+import { ObjectID } from 'mongodb';
 
 @Controller('alerts')
 export class AlertsController {
@@ -103,11 +104,9 @@ export class AlertsController {
 
   @Get(':id')
   async findOne(@Param('id') id: string, @Res() res: Response) {
-    const ObjectID = require('mongodb').ObjectID;
     if (ObjectID.isValid(id)) {
       try {
         const result = await this.alertsService.findOne(id);
-
         if (!result) {
           return res.status(HttpStatus.NOT_FOUND).send();
         } else {

@@ -14,6 +14,7 @@ import { JoiValidationPipe } from 'src/middleware/joi-validation.middleware';
 import { CommentsService } from './comments.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
+import { ObjectID } from 'mongodb';
 
 @Controller('comments')
 export class CommentsController {
@@ -35,7 +36,6 @@ export class CommentsController {
   // }
   @Get('/alert/:alertId')
   findAlertComments(@Param('alertId') alertId: string) {
-    const ObjectID = require('mongodb').ObjectID;
     if (ObjectID.isValid(alertId)) {
       try {
         return this.commentsService.getAlertComments(alertId + '');
@@ -49,7 +49,6 @@ export class CommentsController {
 
   @Get('/user/:userId')
   findUserComments(@Param('userId') userId: string) {
-    const ObjectID = require('mongodb').ObjectID;
     if (ObjectID.isValid(userId)) {
       try {
         return this.commentsService.getUserComments(userId + '');
