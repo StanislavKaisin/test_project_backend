@@ -1,34 +1,62 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UsePipes,
+  BadRequestException,
+} from '@nestjs/common';
+import { addCommentSchema } from 'src/middleware/addCommentSchema';
+import { JoiValidationPipe } from 'src/middleware/joi-validation.middleware';
 import { CommentsService } from './comments.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
+import { ObjectID } from 'mongodb';
 
 @Controller('comments')
 export class CommentsController {
   constructor(private readonly commentsService: CommentsService) {}
 
   @Post()
+  @UsePipes(new JoiValidationPipe(addCommentSchema))
   create(@Body() createCommentDto: CreateCommentDto) {
-    return this.commentsService.create(createCommentDto);
+    try {
+      return this.commentsService.create(createCommentDto);
+    } catch (error) {
+      throw new BadRequestException(error.message);
+    }
   }
 
-  @Get()
-  findAll() {
-    return this.commentsService.findAll();
+  // @Get()
+  // findAll() {
+  //   return this.commentsService.findAll();
+  // }
+  @Get('/alert/:alertId')
+  findAlertComments(@Param('alertId') alertId: string) {
+    if (ObjectID.isValid(alertId)) {
+      try {
+        return this.commentsService.getAlertComments(alertId + '');
+      } catch (error) {
+        throw new BadRequestException(error);
+      }
+    } else {
+      throw new BadRequestException('Alert not found');
+    }
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.commentsService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCommentDto: UpdateCommentDto) {
-    return this.commentsService.update(+id, updateCommentDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.commentsService.remove(+id);
+  @Get('/user/:userId')
+  findUserComments(@Param('userId') userId: string) {
+    if (ObjectID.isValid(userId)) {
+      try {
+        return this.commentsService.getUserComments(userId + '');
+      } catch (error) {
+        throw new BadRequestException(error);
+      }
+    } else {
+      throw new BadRequestException('Alert not found');
+    }
   }
 }

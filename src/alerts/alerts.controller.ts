@@ -12,18 +12,20 @@ import {
   BadRequestException,
   Res,
   HttpStatus,
+  Query,
+  Req,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import express, { Request, Response } from 'express';
-import { Express } from 'express';
+import { Request, Response } from 'express';
 import { Multer } from 'multer';
 import { addAlertSchema } from 'src/middleware/addAlertSchema';
-import { JoiValidationPipe } from 'src/middleware/joi-validation.middleware';
 import { join } from 'path';
 import * as fs from 'fs';
 import { AlertsService } from './alerts.service';
 import { CreateAlertDto } from './dto/create-alert.dto';
 import { UpdateAlertDto } from './dto/update-alert.dto';
+import { UserAlertsDto } from './dto/user-alerts.dto';
+import { ObjectID } from 'mongodb';
 
 @Controller('alerts')
 export class AlertsController {
@@ -83,6 +85,18 @@ export class AlertsController {
     }
   }
 
+  @Get('search')
+  async findAlertsWithPagination(
+    @Query('query') query: string,
+    @Query('page') page: number,
+  ) {
+    // @ts-ignore error TS2367
+    if (page === 'undefined') {
+      page = 1;
+    }
+    return this.alertsService.findAlertsPagination(query, page);
+  }
+
   @Get()
   findAll() {
     return this.alertsService.findAll();
@@ -90,11 +104,9 @@ export class AlertsController {
 
   @Get(':id')
   async findOne(@Param('id') id: string, @Res() res: Response) {
-    const ObjectID = require('mongodb').ObjectID;
     if (ObjectID.isValid(id)) {
       try {
         const result = await this.alertsService.findOne(id);
-
         if (!result) {
           return res.status(HttpStatus.NOT_FOUND).send();
         } else {
@@ -117,5 +129,15 @@ export class AlertsController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.alertsService.remove(+id);
+  }
+
+  @Post('user')
+  findUserAlerts(@Req() req, @Body() userAlertsDto: UserAlertsDto) {
+    const { owner } = userAlertsDto;
+    try {
+      return this.alertsService.findUserAlerts(owner);
+    } catch (error) {
+      return new BadRequestException(error);
+    }
   }
 }

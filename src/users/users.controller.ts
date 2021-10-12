@@ -5,7 +5,6 @@ import {
   Body,
   Patch,
   Param,
-  Delete,
   UsePipes,
   BadRequestException,
 } from '@nestjs/common';
@@ -15,6 +14,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { JoiValidationPipe } from 'src/middleware/joi-validation.middleware';
 import { createUserSchema } from 'src/middleware/createUserSchema';
 import { hashPassword } from 'src/utils/encryption';
+import { updateUserSchema } from 'src/middleware/updateUserSchema';
 
 const MongoErrorDuplicateKeyErrorCode = 11000;
 
@@ -46,23 +46,41 @@ export class UsersController {
     }
   }
 
-  @Get()
-  findAll() {
-    return this.usersService.findAll();
-  }
+  // @Get()
+  // async findAll() {
+  //   return await this.usersService.findAll();
+  // }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(id);
-  }
+  // @Get(':id')
+  // async findOne(@Param('id') id: string) {
+  //   return await this.usersService.findOneById(id);
+  // }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.usersService.update(+id, updateUserDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(+id);
+  // @UsePipes(new JoiValidationPipe(updateUserSchema))
+  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+    // validation is here as for some reasons UsePipes does not work
+    const { error } = updateUserSchema.validate(updateUserDto, {
+      errors: {
+        wrap: {
+          label: '',
+        },
+      },
+    });
+    if (error) {
+      throw new BadRequestException(error.message);
+    } else {
+      const userFromDb = await this.usersService.findOneById(id);
+      if (!userFromDb) {
+        throw new BadRequestException('User not found!');
+      } else {
+        //
+        const dataToUpdate = {
+          ...JSON.parse(JSON.stringify(userFromDb)),
+          ...updateUserDto,
+        };
+        return this.usersService.update(id, dataToUpdate);
+      }
+    }
   }
 }

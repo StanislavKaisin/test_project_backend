@@ -1,16 +1,16 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { Alert, AlertDocument } from 'src/schemas/alert.schema';
+import { Alert, IAlertDocument } from 'src/schemas/alert.schema';
 import { CreateAlertDto } from './dto/create-alert.dto';
 import { UpdateAlertDto } from './dto/update-alert.dto';
 import * as mongoose from 'mongoose';
-import { pipeline } from 'stream';
+import { PaginateModel } from 'mongoose';
 
 @Injectable()
 export class AlertsService {
   constructor(
-    @InjectModel(Alert.name) private alertsModel: Model<AlertDocument>,
+    @InjectModel(Alert.name)
+    private readonly alertsModel: PaginateModel<IAlertDocument>,
   ) {}
 
   async create(createAlertDto: CreateAlertDto) {
@@ -18,7 +18,24 @@ export class AlertsService {
   }
 
   async findAll() {
-    return this.alertsModel.find().sort({ numberOfViews: -1 });
+    return this.alertsModel.find().sort({ numberOfViews: -1 }).limit(10);
+  }
+
+  async findAlertsPagination(query: string, page: number) {
+    const options = {
+      page: page,
+      limit: 10,
+    };
+    if (query === '') {
+      return await this.alertsModel.paginate({}, options);
+    }
+    if (!query) {
+      throw new BadRequestException('Wrong query!');
+    }
+    return await this.alertsModel.paginate(
+      { $text: { $search: query } },
+      options,
+    );
   }
 
   async findOne(id: string) {
@@ -57,5 +74,9 @@ export class AlertsService {
 
   remove(id: number) {
     return `This action removes a #${id} alert`;
+  }
+
+  async findUserAlerts(owner: string) {
+    return await this.alertsModel.find({ owner: { $eq: owner } });
   }
 }

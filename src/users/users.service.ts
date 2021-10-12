@@ -1,6 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import e from 'express';
 import { Model } from 'mongoose';
 import { User, UserDocument } from 'src/schemas/user.schema';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -15,19 +14,22 @@ export class UsersService {
     return this.usersModel.create(createUserDto);
   }
 
-  findAll() {
-    return `This action returns all users`;
+  async findAll() {
+    return await this.usersModel.find();
   }
 
   async findOne(email: string) {
     return await this.usersModel.findOne({ email });
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+  async findOneById(id: string) {
+    return await this.usersModel.findById(id);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    return await this.usersModel.findByIdAndUpdate(id, updateUserDto, {
+      new: true,
+      useFindAndModify: false,
+    });
   }
 }
