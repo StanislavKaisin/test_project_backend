@@ -17,4 +17,5 @@ export const addAlertSchema = joi.object({
   // required for backend validation
   owner: joi.string().alphanum().required(),
   file: joi.any().allow(null, ''),
+  searchForOwner: joi.boolean().allow(null, ''),
 });

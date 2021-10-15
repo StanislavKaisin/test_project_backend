@@ -44,6 +44,9 @@ export class Alert {
   @Prop()
   address: string;
 
+  @Prop()
+  searchForOwner: boolean;
+
   @Prop({ type: Number, default: 0 })
   numberOfViews: number;
 

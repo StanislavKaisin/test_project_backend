@@ -6,4 +6,5 @@ export class CreateAlertDto {
   readonly address: string;
   readonly owner: string;
   readonly file?: any;
+  readonly searchForOwner?: boolean;
 }
