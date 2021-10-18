@@ -72,7 +72,7 @@ export class AlertsController {
             fit: 'contain',
             background: { r: 255, g: 255, b: 255, alpha: 0.1 },
           })
-          .webp({ lossless: true })
+          .webp()
           .toFile(filePath);
         await this.alertsService
           .update(newAlert._id, {
