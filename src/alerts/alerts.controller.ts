@@ -26,6 +26,7 @@ import { CreateAlertDto } from './dto/create-alert.dto';
 import { UpdateAlertDto } from './dto/update-alert.dto';
 import { UserAlertsDto } from './dto/user-alerts.dto';
 import { ObjectID } from 'mongodb';
+import * as sharp from 'sharp';
 
 @Controller('alerts')
 export class AlertsController {
@@ -62,23 +63,25 @@ export class AlertsController {
     } else {
       const fileName = newAlert._id;
       const fileExtension = file.mimetype.split('/')[1];
-      const filePath = join(
-        __dirname,
-        '..',
-        '..',
-        `uploads/${fileName}.${fileExtension}`,
-      );
+      const filePath = join(__dirname, '..', '..', `uploads/${fileName}.webp`);
       try {
-        fs.writeFile(filePath, file.buffer, async () => {
-          await this.alertsService
-            .update(newAlert._id, {
-              img: `${fileName}.${fileExtension}`,
-            })
-            .then((updatedAlert) => {
-              res.status(201);
-              res.send(updatedAlert);
-            });
-        });
+        await sharp(file.buffer)
+          .resize({
+            height: 700,
+            width: 1000,
+            fit: 'contain',
+            background: { r: 255, g: 255, b: 255, alpha: 0.1 },
+          })
+          .webp({ lossless: true })
+          .toFile(filePath);
+        await this.alertsService
+          .update(newAlert._id, {
+            img: `${fileName}.webp`,
+          })
+          .then((updatedAlert) => {
+            res.status(201);
+            res.send(updatedAlert);
+          });
       } catch (error) {
         throw new Error(error.message);
       }
