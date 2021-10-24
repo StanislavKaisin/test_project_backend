@@ -18,4 +18,6 @@ export const addAlertSchema = joi.object({
   owner: joi.string().alphanum().required(),
   file: joi.any().allow(null, ''),
   searchForOwner: joi.boolean().allow(null, ''),
+  phoneCountry: joi.string().allow(null, ''),
+  viberCountry: joi.string().allow(null, ''),
 });

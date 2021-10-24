@@ -46,6 +46,7 @@ export class AlertsController {
         },
       },
     });
+
     if (error) {
       throw new BadRequestException(error.message);
     }
