@@ -16,5 +16,5 @@ export const createUserSchema = joi.object({
     .phoneNumber({ defaultCountry: 'UA', format: 'international' })
     //'+32 494 32 24 56'
     .required(),
-  address: joi.string().allow(null, '').alphanum().min(10).max(100),
+  address: joi.string().allow(null, '').min(10).max(100),
 });

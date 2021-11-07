@@ -5,12 +5,15 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Alert, AlertSchema } from 'src/schemas/alert.schema';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AlertEntity } from './entities/alert.entity';
+import { UserEntity } from 'src/users/entities/user.entity';
+import { UsersModule } from 'src/users/users.module';
 
 @Module({
   controllers: [AlertsController],
   imports: [
     MongooseModule.forFeature([{ name: Alert.name, schema: AlertSchema }]),
-    TypeOrmModule.forFeature([AlertEntity]),
+    TypeOrmModule.forFeature([AlertEntity, UserEntity]),
+    UsersModule,
   ],
   providers: [AlertsService],
 })

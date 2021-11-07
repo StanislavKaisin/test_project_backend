@@ -3,41 +3,41 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
-  Delete,
-  UsePipes,
   UseInterceptors,
   UploadedFile,
   BadRequestException,
   Res,
-  HttpStatus,
   Query,
   Req,
+  DefaultValuePipe,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { Request, Response } from 'express';
+import { Response } from 'express';
 import { Multer } from 'multer';
 import { addAlertSchema } from 'src/middleware/addAlertSchema';
 import { join } from 'path';
 import * as fs from 'fs';
-import { AlertsService } from './alerts.service';
+import { AlertsService, IPaginationResponse } from './alerts.service';
 import { CreateAlertDto } from './dto/create-alert.dto';
-import { UpdateAlertDto } from './dto/update-alert.dto';
 import { UserAlertsDto } from './dto/user-alerts.dto';
-import { ObjectID } from 'mongodb';
 import * as sharp from 'sharp';
+import { v4 as uuidv4 } from 'uuid';
+import { UsersService } from 'src/users/users.service';
 
 @Controller('alerts')
 export class AlertsController {
-  constructor(private readonly alertsService: AlertsService) {}
+  constructor(
+    private readonly alertsService: AlertsService,
+    private readonly usersService: UsersService,
+  ) {}
 
   @Post()
   @UseInterceptors(FileInterceptor('file'))
   async create(
     @Body() createAlertDto: CreateAlertDto,
     @UploadedFile() file: Multer.File,
-    @Res() res: Response,
   ) {
     const { error } = addAlertSchema.validate(createAlertDto, {
       errors: {
@@ -51,19 +51,22 @@ export class AlertsController {
       throw new BadRequestException(error.message);
     }
     delete createAlertDto[file];
-    const newAlert = await this.alertsService.create(createAlertDto);
-    if (file === undefined) {
-      await this.alertsService
-        .update(newAlert._id, {
-          img: ``,
-        })
-        .then((updatedAlert) => {
-          res.status(201);
-          res.send(updatedAlert);
-        });
+    createAlertDto.numberOfViews = 0;
+    //@ts-ignore
+    if (createAlertDto.searchForOwner === 'true') {
+      //@ts-ignore
+      createAlertDto.searchForOwner = true;
+    }
+    if (file === undefined || file === null) {
+      createAlertDto.img = ``;
+      try {
+        const result = await this.alertsService.create(createAlertDto);
+        return result;
+      } catch (error) {
+        throw new Error(error);
+      }
     } else {
-      const fileName = newAlert._id;
-      const fileExtension = file.mimetype.split('/')[1];
+      const fileName = uuidv4();
       const filePath = join(__dirname, '..', '..', `uploads/${fileName}.webp`);
       try {
         await sharp(file.buffer)
@@ -75,14 +78,13 @@ export class AlertsController {
           })
           .webp()
           .toFile(filePath);
-        await this.alertsService
-          .update(newAlert._id, {
-            img: `${fileName}.webp`,
-          })
-          .then((updatedAlert) => {
-            res.status(201);
-            res.send(updatedAlert);
-          });
+        createAlertDto.img = `${fileName}.webp`;
+        try {
+          const result = await this.alertsService.create(createAlertDto);
+          return JSON.stringify(result);
+        } catch (error) {
+          throw new Error(error);
+        }
       } catch (error) {
         throw new Error(error.message);
       }
@@ -92,47 +94,30 @@ export class AlertsController {
   @Get('search')
   async findAlertsWithPagination(
     @Query('query') query: string,
-    @Query('page') page: number,
-  ) {
+    @Query('page', new DefaultValuePipe(1), ParseIntPipe) page: number = 1,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number = 10,
+  ): Promise<IPaginationResponse> {
     // @ts-ignore error TS2367
     if (page === 'undefined') {
       page = 1;
     }
-    return this.alertsService.findAlertsPagination(query, page);
+    // @ts-ignore
+    if (page < 1) page = 1;
+    return this.alertsService.findAlertsPagination(query, { limit, page });
   }
 
   @Get()
-  findAll() {
-    return this.alertsService.findAll();
+  async findAll() {
+    return await this.alertsService.findAll();
   }
 
   @Get(':id')
   async findOne(@Param('id') id: string, @Res() res: Response) {
-    if (ObjectID.isValid(id)) {
-      try {
-        const result = await this.alertsService.findOne(id);
-        if (!result) {
-          return res.status(HttpStatus.NOT_FOUND).send();
-        } else {
-          return res.status(200).send(result);
-        }
-      } catch (error) {
-        const errorMessage = error?.reason || error.message;
-        return new BadRequestException(errorMessage);
-      }
-    } else {
-      return res.status(HttpStatus.NOT_FOUND).send();
-    }
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAlertDto: UpdateAlertDto) {
-    return this.alertsService.update(id, updateAlertDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.alertsService.remove(+id);
+    const result = await this.alertsService.findOne(id);
+    const user = await this.usersService.findOneById(result.owner_id);
+    result.user = [user];
+    //@ts-ignore
+    return res.status(200).send([result]);
   }
 
   @Post('user')

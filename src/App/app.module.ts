@@ -23,7 +23,6 @@ import { CommentEntity } from 'src/comments/entities/comment.entity';
     TypeOrmModule.forRoot({
       type: 'sqlite',
       database: 'db',
-      // entities: [__dirname + '/src/**/*.entities{.ts,.js}'],
       entities: [UserEntity, AlertEntity, CommentEntity],
       synchronize: true,
     }),

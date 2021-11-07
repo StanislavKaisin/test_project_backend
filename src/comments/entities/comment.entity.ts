@@ -1,18 +1,18 @@
 import { AlertEntity } from 'src/alerts/entities/alert.entity';
 import { UserEntity } from 'src/users/entities/user.entity';
-import { Entity, Column, PrimaryGeneratedColumn, OneToOne } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 
 @Entity()
 export class CommentEntity {
   @PrimaryGeneratedColumn()
-  id: number;
+  _id: number;
 
   @Column()
   description: string;
 
-  @OneToOne(() => UserEntity, (user: UserEntity) => user.id)
+  @ManyToOne(() => UserEntity, (user: UserEntity) => user._id)
   owner: UserEntity;
 
-  @OneToOne(() => AlertEntity, (alert: AlertEntity) => alert.id)
+  @ManyToOne(() => AlertEntity, (alert: AlertEntity) => alert._id)
   alert: AlertEntity;
 }

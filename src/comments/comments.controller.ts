@@ -3,9 +3,7 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
-  Delete,
   UsePipes,
   BadRequestException,
 } from '@nestjs/common';
@@ -30,33 +28,13 @@ export class CommentsController {
     }
   }
 
-  // @Get()
-  // findAll() {
-  //   return this.commentsService.findAll();
-  // }
   @Get('/alert/:alertId')
   findAlertComments(@Param('alertId') alertId: string) {
-    if (ObjectID.isValid(alertId)) {
-      try {
-        return this.commentsService.getAlertComments(alertId + '');
-      } catch (error) {
-        throw new BadRequestException(error);
-      }
-    } else {
-      throw new BadRequestException('Alert not found');
-    }
+    return this.commentsService.getAlertComments(alertId + '');
   }
 
   @Get('/user/:userId')
   findUserComments(@Param('userId') userId: string) {
-    if (ObjectID.isValid(userId)) {
-      try {
-        return this.commentsService.getUserComments(userId + '');
-      } catch (error) {
-        throw new BadRequestException(error);
-      }
-    } else {
-      throw new BadRequestException('Alert not found');
-    }
+    return this.commentsService.getUserComments(userId + '');
   }
 }

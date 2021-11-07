@@ -1,6 +1,5 @@
 import {
   Controller,
-  Get,
   Post,
   Body,
   Patch,
@@ -46,16 +45,6 @@ export class UsersController {
     }
   }
 
-  // @Get()
-  // async findAll() {
-  //   return await this.usersService.findAll();
-  // }
-
-  // @Get(':id')
-  // async findOne(@Param('id') id: string) {
-  //   return await this.usersService.findOneById(id);
-  // }
-
   @Patch(':id')
   // @UsePipes(new JoiValidationPipe(updateUserSchema))
   async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
@@ -70,7 +59,7 @@ export class UsersController {
     if (error) {
       throw new BadRequestException(error.message);
     } else {
-      const userFromDb = await this.usersService.findOneById(id);
+      const userFromDb = await this.usersService.findOneById(+id);
       if (!userFromDb) {
         throw new BadRequestException('User not found!');
       } else {
@@ -79,7 +68,7 @@ export class UsersController {
           ...JSON.parse(JSON.stringify(userFromDb)),
           ...updateUserDto,
         };
-        return this.usersService.update(id, dataToUpdate);
+        return this.usersService.update(+id, dataToUpdate);
       }
     }
   }
