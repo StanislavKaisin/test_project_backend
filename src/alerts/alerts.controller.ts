@@ -52,9 +52,7 @@ export class AlertsController {
     }
     delete createAlertDto[file];
     createAlertDto.numberOfViews = 0;
-    //@ts-ignore
-    if (createAlertDto.searchForOwner === 'true') {
-      //@ts-ignore
+    if (createAlertDto.searchForOwner + '' === 'true') {
       createAlertDto.searchForOwner = true;
     }
     if (file === undefined || file === null) {
@@ -101,7 +99,6 @@ export class AlertsController {
     if (page === 'undefined') {
       page = 1;
     }
-    // @ts-ignore
     if (page < 1) page = 1;
     return this.alertsService.findAlertsPagination(query, { limit, page });
   }
@@ -116,7 +113,6 @@ export class AlertsController {
     const result = await this.alertsService.findOne(id);
     const user = await this.usersService.findOneById(result.owner_id);
     result.user = [user];
-    //@ts-ignore
     return res.status(200).send([result]);
   }
 

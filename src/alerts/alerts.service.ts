@@ -35,7 +35,6 @@ export class AlertsService {
 
   async create(createAlertDto: CreateAlertDto) {
     try {
-      // @ts-ignore
       const result = await this.alertRepository.save(createAlertDto);
       return result;
     } catch (error) {

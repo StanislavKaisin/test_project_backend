@@ -17,7 +17,6 @@ export class CommentsService {
   ) {}
 
   create(createCommentDto: CreateCommentDto) {
-    //@ts-ignore
     const result = this.commentRepository.save(createCommentDto);
     return result;
   }

@@ -48,13 +48,3 @@ export class AlertEntity {
   @Column({ nullable: true })
   img: string;
 }
-
-/*
-[23:37:29] File change detected. Starting incremental compilation...
-
-[Nest] 82060   - 30.10.2021, 23:37:32   [TypeOrmModule] Unable to connect to the database. Retrying (5)... +3023ms
-QueryFailedError: SQLITE_CONSTRAINT: NOT NULL constraint failed: temporary_alert_entity.img
-    at QueryFailedError.TypeORMError [as constructor] (/Users/stanislavkaisin/Documents/Digis/be/Digis-intern-task-backend/src/error/TypeORMError.ts:7:9)
-    at new QueryFailedError (/Users/
-
-      */
