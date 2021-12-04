@@ -17,7 +17,7 @@ export interface IPaginationResponse {
   meta?: {
     query: string;
     currentPage: number;
-    itemCount: number;
+    itemCount?: number;
     itemsPerPage: number;
     totalItems: number;
     totalPages: number;
@@ -46,7 +46,7 @@ export class AlertsService {
   async findAll() {
     return await this.alertRepository
       .createQueryBuilder('alert')
-      .orderBy('numberOfViews', 'DESC')
+      .orderBy('number_of_views', 'DESC')
       .select('alert.*')
       .take(10)
       .execute();
@@ -63,7 +63,7 @@ export class AlertsService {
       const totalResults = queryBuilder.length;
       const totalPages = Math.ceil(totalResults / limit);
       if (page > totalPages) page = totalPages;
-      const result = {} as any;
+      const result = {} as IPaginationResponse;
       result.items = queryBuilder.slice(limit * (page - 1), limit * page);
       result.meta = {
         totalPages,
@@ -88,7 +88,7 @@ export class AlertsService {
     const totalResults = queryBuilder.length;
     const totalPages = Math.ceil(totalResults / limit);
     if (page > totalPages) page = totalPages;
-    const result = {} as any;
+    const result = {} as IPaginationResponse;
     result.items = queryBuilder.slice(limit * (page - 1), limit * page);
     result.meta = {
       totalPages,
@@ -102,7 +102,7 @@ export class AlertsService {
 
   async findOne(_id: string) {
     const alert = await this.alertRepository.findOne({ _id: +_id });
-    alert.numberOfViews = alert.numberOfViews + 1;
+    alert.number_of_views = alert.number_of_views + 1;
     await this.alertRepository.update(_id, alert);
     const result = await this.alertRepository
       .createQueryBuilder('alert')

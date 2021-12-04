@@ -25,10 +25,8 @@ export class UsersService {
     const result = await this.userRepository
       .createQueryBuilder('user')
       .where('user.email = :email', { email: email })
-      .select('user.*')
       .addSelect('user.password')
-      .getRawOne();
-
+      .getOne();
     return result;
   }
 

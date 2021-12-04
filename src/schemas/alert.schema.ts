@@ -12,7 +12,8 @@ export interface IAlertDocument extends Document {
   phone: string;
   viber: string;
   address: string;
-  numberOfViews: number;
+  numberOfViews?: number;
+  number_of_views?: number;
   img: string;
   owner: User;
   comments: [comment: Comment];
@@ -48,7 +49,7 @@ export class Alert {
   searchForOwner: boolean;
 
   @Prop({ type: Number, default: 0 })
-  numberOfViews: number;
+  number_of_views: number;
 
   @Prop()
   img: string;

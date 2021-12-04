@@ -6,6 +6,10 @@ import {
   Param,
   UsePipes,
   BadRequestException,
+  UseGuards,
+  ParseIntPipe,
+  HttpStatus,
+  ValidationPipe,
 } from '@nestjs/common';
 import { addCommentSchema } from 'src/middleware/addCommentSchema';
 import { JoiValidationPipe } from 'src/middleware/joi-validation.middleware';
@@ -29,7 +33,14 @@ export class CommentsController {
   }
 
   @Get('/alert/:alertId')
-  findAlertComments(@Param('alertId') alertId: string) {
+  @UsePipes(new ValidationPipe({ transform: true }))
+  findAlertComments(
+    @Param(
+      'alertId',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    alertId: number,
+  ) {
     return this.commentsService.getAlertComments(alertId + '');
   }
 

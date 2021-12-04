@@ -30,10 +30,10 @@ export class AlertEntity {
   address: string;
 
   @Column()
-  numberOfViews: number;
+  number_of_views: number;
 
   @Column('boolean', { default: false })
-  searchForOwner: boolean;
+  search_for_owner: boolean;
 
   @ManyToOne((type) => UserEntity, (user) => user.alerts)
   @JoinColumn()

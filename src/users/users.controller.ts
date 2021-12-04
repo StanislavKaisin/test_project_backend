@@ -6,6 +6,9 @@ import {
   Param,
   UsePipes,
   BadRequestException,
+  ValidationPipe,
+  ParseIntPipe,
+  HttpStatus,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -32,7 +35,10 @@ export class UsersController {
     };
     try {
       const result = await this.usersService.create(userToDb);
-      return result;
+      if (result.password) {
+        const { password, ...userWithoutPassword } = result;
+        return userWithoutPassword;
+      } else return result;
     } catch (error) {
       let errorMessage;
       if (
@@ -46,8 +52,15 @@ export class UsersController {
   }
 
   @Patch(':id')
-  // @UsePipes(new JoiValidationPipe(updateUserSchema))
-  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  @UsePipes(new ValidationPipe({ transform: true }))
+  async update(
+    @Param(
+      'id',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    id: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
     // validation is here as for some reasons UsePipes does not work
     const { error } = updateUserSchema.validate(updateUserDto, {
       errors: {

@@ -7,5 +7,5 @@ export class UpdateAlertDto extends PartialType(CreateAlertDto) {
   description?: string;
   owner?: UserEntity;
   img?: string;
-  numberOfViews?: number;
+  number_of_views?: number;
 }

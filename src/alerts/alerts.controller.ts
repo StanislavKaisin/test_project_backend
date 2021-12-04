@@ -12,6 +12,9 @@ import {
   Req,
   DefaultValuePipe,
   ParseIntPipe,
+  ValidationPipe,
+  UsePipes,
+  HttpStatus,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
@@ -51,9 +54,9 @@ export class AlertsController {
       throw new BadRequestException(error.message);
     }
     delete createAlertDto[file];
-    createAlertDto.numberOfViews = 0;
+    createAlertDto.number_of_views = 0;
     if (createAlertDto.searchForOwner + '' === 'true') {
-      createAlertDto.searchForOwner = true;
+      createAlertDto.search_for_owner = true;
     }
     if (file === undefined || file === null) {
       createAlertDto.img = ``;
@@ -109,8 +112,16 @@ export class AlertsController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: string, @Res() res: Response) {
-    const result = await this.alertsService.findOne(id);
+  @UsePipes(new ValidationPipe({ transform: true }))
+  async findOne(
+    @Param(
+      'id',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    id: string,
+    @Res() res: Response,
+  ) {
+    const result = await this.alertsService.findOne(id + '');
     const user = await this.usersService.findOneById(result.owner_id);
     result.user = [user];
     return res.status(200).send([result]);
