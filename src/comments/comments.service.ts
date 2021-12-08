@@ -12,7 +12,7 @@ import { AlertEntity } from 'src/alerts/entities/alert.entity';
 @Injectable()
 export class CommentsService {
   constructor(
-    @InjectModel(Comment.name) private commentsModel: Model<CommentDocument>,
+    // @InjectModel(Comment.name) private commentsModel: Model<CommentDocument>,
     @InjectRepository(CommentEntity)
     private commentRepository: Repository<CommentEntity>,
   ) {}

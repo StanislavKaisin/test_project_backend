@@ -27,8 +27,8 @@ export interface IPaginationResponse {
 @Injectable()
 export class AlertsService {
   constructor(
-    @InjectModel(Alert.name)
-    private readonly alertsModel: PaginateModel<IAlertDocument>,
+    // @InjectModel(Alert.name)
+    // private readonly alertsModel: PaginateModel<IAlertDocument>,
     @InjectRepository(AlertEntity)
     private alertRepository: Repository<AlertEntity>,
   ) {}

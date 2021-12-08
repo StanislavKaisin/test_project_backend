@@ -11,7 +11,7 @@ import { UserEntity } from './entities/user.entity';
 @Injectable()
 export class UsersService {
   constructor(
-    @InjectModel(User.name) private usersModel: Model<UserDocument>,
+    // @InjectModel(User.name) private usersModel: Model<UserDocument>,
 
     @InjectRepository(UserEntity)
     private userRepository: Repository<UserEntity>,

@@ -6,17 +6,15 @@ import {
   Param,
   UsePipes,
   BadRequestException,
-  UseGuards,
   ParseIntPipe,
   HttpStatus,
   ValidationPipe,
 } from '@nestjs/common';
 import { addCommentSchema } from 'src/middleware/addCommentSchema';
+// import { addCommentSchema } from '../middleware/addCommentSchema';
 import { JoiValidationPipe } from 'src/middleware/joi-validation.middleware';
 import { CommentsService } from './comments.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
-import { UpdateCommentDto } from './dto/update-comment.dto';
-import { ObjectID } from 'mongodb';
 
 @Controller('comments')
 export class CommentsController {
