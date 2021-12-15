@@ -1,0 +1,15 @@
+setup:
+  addons:
+    - plan: heroku-postgresql
+      as: DATABASE
+build:
+  docker:
+    platform: linux/amd64
+    web: Dockerfile
+config: TYPE=postgres
+  HOST=ec2-54-220-166-184.eu-west-1.compute.amazonaws.com
+  PORT=5432
+  USERNAME=rguwsfiigvqpkx
+  PASSWORD=fabcf8f4293331d668a62228764886e9fa94fabe6928f4c99c00d497188f403a
+  DATABASE=dd75tmti3i0ego
+  SECRET=SECRET
