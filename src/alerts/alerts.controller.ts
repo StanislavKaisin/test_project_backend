@@ -28,12 +28,14 @@ import { UserAlertsDto } from './dto/user-alerts.dto';
 import * as sharp from 'sharp';
 import { v4 as uuidv4 } from 'uuid';
 import { UsersService } from 'src/users/users.service';
+import { FileService } from 'src/FileModule/file.service';
 
 @Controller('alerts')
 export class AlertsController {
   constructor(
     private readonly alertsService: AlertsService,
     private readonly usersService: UsersService,
+    private readonly fileService: FileService,
   ) {}
 
   @Post()
@@ -67,18 +69,8 @@ export class AlertsController {
         throw new Error(error);
       }
     } else {
-      const fileName = uuidv4();
-      const filePath = join(__dirname, '..', '..', `uploads/${fileName}.webp`);
       try {
-        await sharp(file.buffer)
-          .resize({
-            height: 700,
-            width: 1000,
-            fit: 'contain',
-            background: { r: 255, g: 255, b: 255, alpha: 0.1 },
-          })
-          .webp()
-          .toFile(filePath);
+        const fileName = await this.fileService.createFile(file);
         createAlertDto.img = `${fileName}.webp`;
         try {
           const result = await this.alertsService.create(createAlertDto);
