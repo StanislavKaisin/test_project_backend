@@ -1,0 +1,18 @@
+version: '3.9'
+services:
+  api:
+    platform: linux/amd64
+    build:
+        context: .
+        dockerfile: Dockerfile
+    environment:
+      - TYPE=postgres
+      - HOST=ec2-54-220-166-184.eu-west-1.compute.amazonaws.com
+      - PORT=5432
+      - USERNAME=rguwsfiigvqpkx
+      - PASSWORD=fabcf8f4293331d668a62228764886e9fa94fabe6928f4c99c00d497188f403a
+      - DATABASE=dd75tmti3i0ego
+      - SECRET=SECRET      
+    ports:
+      - 3000:3000
+    command: npm run start:prod

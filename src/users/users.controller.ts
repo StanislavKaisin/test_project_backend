@@ -1,12 +1,14 @@
 import {
   Controller,
-  Get,
   Post,
   Body,
   Patch,
   Param,
   UsePipes,
   BadRequestException,
+  ValidationPipe,
+  ParseIntPipe,
+  HttpStatus,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -33,7 +35,10 @@ export class UsersController {
     };
     try {
       const result = await this.usersService.create(userToDb);
-      return result;
+      if (result.password) {
+        const { password, ...userWithoutPassword } = result;
+        return userWithoutPassword;
+      } else return result;
     } catch (error) {
       let errorMessage;
       if (
@@ -46,19 +51,16 @@ export class UsersController {
     }
   }
 
-  // @Get()
-  // async findAll() {
-  //   return await this.usersService.findAll();
-  // }
-
-  // @Get(':id')
-  // async findOne(@Param('id') id: string) {
-  //   return await this.usersService.findOneById(id);
-  // }
-
   @Patch(':id')
-  // @UsePipes(new JoiValidationPipe(updateUserSchema))
-  async update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  @UsePipes(new ValidationPipe({ transform: true }))
+  async update(
+    @Param(
+      'id',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    id: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
     // validation is here as for some reasons UsePipes does not work
     const { error } = updateUserSchema.validate(updateUserDto, {
       errors: {
@@ -70,7 +72,7 @@ export class UsersController {
     if (error) {
       throw new BadRequestException(error.message);
     } else {
-      const userFromDb = await this.usersService.findOneById(id);
+      const userFromDb = await this.usersService.findOneById(+id);
       if (!userFromDb) {
         throw new BadRequestException('User not found!');
       } else {
@@ -79,7 +81,7 @@ export class UsersController {
           ...JSON.parse(JSON.stringify(userFromDb)),
           ...updateUserDto,
         };
-        return this.usersService.update(id, dataToUpdate);
+        return this.usersService.update(+id, dataToUpdate);
       }
     }
   }

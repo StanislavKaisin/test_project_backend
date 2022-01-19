@@ -5,7 +5,6 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { UserDocument } from 'src/schemas/user.schema';
 import { isMatch } from 'src/utils/encryption';
 import { AuthService } from './auth.service';
 import { LoginUserDto } from './dto/login-user.dto';
@@ -28,7 +27,7 @@ export class AuthController {
       } else {
         const comparePasswords = await isMatch(
           userToLogin.password,
-          (userFromDb as UserDocument).password,
+          userFromDb.password,
         );
         if (!comparePasswords) {
           throw new UnauthorizedException(`Wrong password!`);

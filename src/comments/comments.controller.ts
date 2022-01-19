@@ -3,18 +3,18 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
-  Delete,
   UsePipes,
   BadRequestException,
+  ParseIntPipe,
+  HttpStatus,
+  ValidationPipe,
 } from '@nestjs/common';
 import { addCommentSchema } from 'src/middleware/addCommentSchema';
+// import { addCommentSchema } from '../middleware/addCommentSchema';
 import { JoiValidationPipe } from 'src/middleware/joi-validation.middleware';
 import { CommentsService } from './comments.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
-import { UpdateCommentDto } from './dto/update-comment.dto';
-import { ObjectID } from 'mongodb';
 
 @Controller('comments')
 export class CommentsController {
@@ -30,33 +30,20 @@ export class CommentsController {
     }
   }
 
-  // @Get()
-  // findAll() {
-  //   return this.commentsService.findAll();
-  // }
   @Get('/alert/:alertId')
-  findAlertComments(@Param('alertId') alertId: string) {
-    if (ObjectID.isValid(alertId)) {
-      try {
-        return this.commentsService.getAlertComments(alertId + '');
-      } catch (error) {
-        throw new BadRequestException(error);
-      }
-    } else {
-      throw new BadRequestException('Alert not found');
-    }
+  @UsePipes(new ValidationPipe({ transform: true }))
+  findAlertComments(
+    @Param(
+      'alertId',
+      new ParseIntPipe({ errorHttpStatusCode: HttpStatus.NOT_ACCEPTABLE }),
+    )
+    alertId: number,
+  ) {
+    return this.commentsService.getAlertComments(alertId + '');
   }
 
   @Get('/user/:userId')
   findUserComments(@Param('userId') userId: string) {
-    if (ObjectID.isValid(userId)) {
-      try {
-        return this.commentsService.getUserComments(userId + '');
-      } catch (error) {
-        throw new BadRequestException(error);
-      }
-    } else {
-      throw new BadRequestException('Alert not found');
-    }
+    return this.commentsService.getUserComments(userId + '');
   }
 }
