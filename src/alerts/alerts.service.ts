@@ -1,16 +1,8 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Alert, IAlertDocument } from 'src/schemas/alert.schema';
 import { CreateAlertDto } from './dto/create-alert.dto';
-import { PaginateModel } from 'mongoose';
 import { InjectRepository } from '@nestjs/typeorm';
 import { AlertEntity } from './entities/alert.entity';
 import { Repository } from 'typeorm';
-import {
-  paginate,
-  Pagination,
-  IPaginationOptions,
-} from 'nestjs-typeorm-paginate';
 
 export interface IPaginationResponse {
   items?: AlertEntity[];
@@ -27,8 +19,6 @@ export interface IPaginationResponse {
 @Injectable()
 export class AlertsService {
   constructor(
-    // @InjectModel(Alert.name)
-    // private readonly alertsModel: PaginateModel<IAlertDocument>,
     @InjectRepository(AlertEntity)
     private alertRepository: Repository<AlertEntity>,
   ) {}

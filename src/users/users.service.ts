@@ -1,8 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Model } from 'mongoose';
-import { User, UserDocument } from 'src/schemas/user.schema';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -11,8 +8,6 @@ import { UserEntity } from './entities/user.entity';
 @Injectable()
 export class UsersService {
   constructor(
-    // @InjectModel(User.name) private usersModel: Model<UserDocument>,
-
     @InjectRepository(UserEntity)
     private userRepository: Repository<UserEntity>,
   ) {}

@@ -20,13 +20,9 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { Response } from 'express';
 import { Multer } from 'multer';
 import { addAlertSchema } from 'src/middleware/addAlertSchema';
-import { join } from 'path';
-import * as fs from 'fs';
 import { AlertsService, IPaginationResponse } from './alerts.service';
 import { CreateAlertDto } from './dto/create-alert.dto';
 import { UserAlertsDto } from './dto/user-alerts.dto';
-import * as sharp from 'sharp';
-import { v4 as uuidv4 } from 'uuid';
 import { UsersService } from 'src/users/users.service';
 import { FileService } from 'src/FileModule/file.service';
 

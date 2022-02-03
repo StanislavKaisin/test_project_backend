@@ -1,18 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-
-import { Comment, CommentDocument } from 'src/schemas/comment.schema';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CommentEntity } from './entities/comment.entity';
 import { Repository } from 'typeorm';
-import { AlertEntity } from 'src/alerts/entities/alert.entity';
 
 @Injectable()
 export class CommentsService {
   constructor(
-    // @InjectModel(Comment.name) private commentsModel: Model<CommentDocument>,
     @InjectRepository(CommentEntity)
     private commentRepository: Repository<CommentEntity>,
   ) {}
@@ -40,5 +34,3 @@ export class CommentsService {
     return result;
   }
 }
-
-//title
